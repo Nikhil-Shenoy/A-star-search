@@ -1,9 +1,10 @@
 import pprint
 import random
 import sys
-import pdb
+# import pdb
 
 '''
+From Wikipedia:
 Make the initial cell the current cell and mark it as visited
 While there are unvisited cells
 	If the current cell has any neighbours which have not been visited
@@ -47,15 +48,18 @@ def find_unvisited_neighbors(cell,size,visited):
 	else:
 		neighbors = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
 
-	pdb.set_trace()
-	for item in neighbors:
-		if item in visited:
-			neighbors.remove(item)
+	# pdb.set_trace()
+	# Items to remove from neighbors
+	r = list()
 
 	for item in neighbors:
 		if item in visited:
-			neighbors.remove(item)
-	pdb.set_trace()
+			r.append(item)
+
+	for item in r:
+		neighbors.remove(item)
+
+	# pdb.set_trace()
 	return neighbors
 
 
@@ -83,15 +87,11 @@ def generate_grid(size):
 			if cell != current_cell:
 				unvisited.append(cell)
 
-	pdb.set_trace()
+	# pdb.set_trace()
 	# While there are unvisited cells
 	while unvisited:
 		# Get unvisited neighbors of current cell
 		neighbor_list = find_unvisited_neighbors(current_cell,size,visited)
-
-		# for item in neighbor_list:
-		# 	if item in visited:
-		# 		neighbor_list.remove(item)
 
 		# If there are unvisited neighbors
 		if neighbor_list:
