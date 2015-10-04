@@ -1,7 +1,7 @@
 import pprint
 import random
 import sys
-# import pdb
+import pdb
 
 '''
 Make the initial cell the current cell and mark it as visited
@@ -47,10 +47,15 @@ def find_unvisited_neighbors(cell,size,visited):
 	else:
 		neighbors = [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
 
+	pdb.set_trace()
 	for item in neighbors:
 		if item in visited:
 			neighbors.remove(item)
 
+	for item in neighbors:
+		if item in visited:
+			neighbors.remove(item)
+	pdb.set_trace()
 	return neighbors
 
 
@@ -78,6 +83,7 @@ def generate_grid(size):
 			if cell != current_cell:
 				unvisited.append(cell)
 
+	pdb.set_trace()
 	# While there are unvisited cells
 	while unvisited:
 		# Get unvisited neighbors of current cell
@@ -87,12 +93,10 @@ def generate_grid(size):
 		# 	if item in visited:
 		# 		neighbor_list.remove(item)
 
-		# pdb.set_trace()
 		# If there are unvisited neighbors
 		if neighbor_list:
 			# Select random neighbor
 			neighbor = neighbor_list[random.randrange(0,sys.maxint) % len(neighbor_list)]
-			# pdb.set_trace()
 
 			# Push current cell onto the stack
 			stack.append(current_cell)
@@ -105,16 +109,14 @@ def generate_grid(size):
 			grid[i][j] = determine_blocked_status()
 
 			# Make the chosen cell the current cell and mark it as visited
-			# if neighbor in unvisited:
-			unvisited.remove(neighbor)
-			visited.append(neighbor)
-			current_cell = neighbor
-			# pdb.set_trace()
+			if neighbor in unvisited:
+				unvisited.remove(neighbor)
+				visited.append(neighbor)
+				current_cell = neighbor
 
 		# If stack is not empty
 		elif stack:
 			current_cell = stack.pop()
-			# pdb.set_trace()
 
 	return grid
 
