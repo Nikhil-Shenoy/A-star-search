@@ -1,3 +1,4 @@
+import csv
 import pprint
 import random
 import sys
@@ -17,6 +18,7 @@ While there are unvisited cells
 		Make it the current cell
 '''
 
+# Algorithm described in project description to set blocked statuses
 def determine_blocked_status():
 	number = random.randrange(0,sys.maxint) % 10
 	if number <= 2:
@@ -24,6 +26,7 @@ def determine_blocked_status():
 	elif number > 2:
 		return "u"
 
+# Returns list of unvisited neighbors. Cells are tuples of coordinates
 def find_unvisited_neighbors(cell,size,visited):
 	i = cell[0]
 	j = cell[1]
@@ -62,6 +65,36 @@ def find_unvisited_neighbors(cell,size,visited):
 	# pdb.set_trace()
 	return neighbors
 
+# Write grid to output file
+def write_csv(grid,output_file):
+	f = open(output_file,'w')
+	writer = csv.writer(f)
+
+	size = len(grid)
+
+	# First line is the size of the matrix
+	# x means to ignore the value
+	writer.writerow((size,size,'x'))
+
+	for i in range(0,size):
+		for j in range(0,size):
+			writer.writerow((i,j,grid[i][j]))
+
+	f.close()
+
+# Read grid from input file. Returns fully populated grid
+def read_csv(input_file):
+	f = open(input_file,'r')
+
+	reader = csv.reader(f)
+
+	for row in reader:
+		if row[2] == 'x':
+			size = int(row[0])
+			grid = [['x' for i in range(size)] for j in range(size)]
+		else:
+			i = int(row[0])
+			j = int(row[1])	
 
 # Use recursive back-tracking to generate grid
 def generate_grid(size):
@@ -121,9 +154,3 @@ def generate_grid(size):
 	return grid
 
 
-pp = pprint.PrettyPrinter()
-
-size = int(sys.argv[1])
-grid = generate_grid(size)
-
-pp.pprint(grid)
