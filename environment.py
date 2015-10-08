@@ -2,6 +2,7 @@ import csv
 import pprint
 import random
 import sys
+from cell import Cell
 # import pdb
 
 '''
@@ -153,4 +154,23 @@ def generate_grid(size):
 
 	return grid
 
+def tuples_to_objects(grid):
+	size = len(grid)
 
+	object_grid = [['x' for i in range(size)] for j in range(size)]
+	for i in range(size):
+		for j in range(size):
+			object_grid[i][j] = Cell(i,j)
+			object_grid[i][j].status = grid[i][j]
+
+	return object_grid
+
+def print_cells(grid):
+	size = len(grid)
+
+	for i in range(size):
+		row = list()
+		for j in range(size):
+			row.append(grid[i][j].status)
+
+		print row
