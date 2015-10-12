@@ -3,7 +3,7 @@ import pprint
 import random
 import sys
 from cell import Cell
-# import pdb
+import pdb
 
 '''
 From Wikipedia:
@@ -75,27 +75,37 @@ def write_csv(grid,output_file):
 
 	# First line is the size of the matrix
 	# x means to ignore the value
-	writer.writerow((size,size,'x'))
+	writer.writerow((size,size,size))
 
 	for i in range(0,size):
 		for j in range(0,size):
-			writer.writerow((i,j,grid[i][j]))
+			if grid[i][j] == 'u':
+				writer.writerow((i,j,1))
+			else:
+				writer.writerow((i,j,0))
 
 	f.close()
 
 # Read grid from input file. Returns fully populated grid
-def read_csv(input_file):
+def read_grid(input_file):
 	f = open(input_file,'r')
 
 	reader = csv.reader(f)
 
+	x = 'x'
+	# pdb.set_trace()
 	for row in reader:
-		if row[2] == 'x':
+		print row
+		if row[2] == x:
 			size = int(row[0])
 			grid = [['x' for i in range(size)] for j in range(size)]
 		else:
 			i = int(row[0])
 			j = int(row[1])	
+			grid[i][j] = row[2]
+
+	converted_grid = tuples_to_objects(grid)
+	return converted_grid, size
 
 # Use recursive back-tracking to generate grid
 def generate_grid(size):
@@ -160,7 +170,7 @@ def tuples_to_objects(grid):
 	object_grid = [['x' for i in range(size)] for j in range(size)]
 	for i in range(size):
 		for j in range(size):
-			object_grid[i][j] = Cell(i,j)
+			object_grid[i][j] = Cell(i,j,size)
 			object_grid[i][j].status = grid[i][j]
 
 	return object_grid

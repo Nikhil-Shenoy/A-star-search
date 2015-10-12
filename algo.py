@@ -1,6 +1,6 @@
 from binary_heap import BHeap
 import math
-import pdb
+# import pdb
 
 infinity = 1000000 
 
@@ -64,6 +64,7 @@ def print_closed_list(closed_list):
 			print "({0},{1}) -> {2}".format(closed_list[i].x,closed_list[i].y,closed_list[i].f_val)
 
 def a_star(start,goal,grid):
+	size = len(grid)
 	closed_list = list()
 	open_list = BHeap() 
 	open_list.insert(start)
@@ -80,7 +81,8 @@ def a_star(start,goal,grid):
 		closed_list.append(current)
 
 		if current.equals(goal):
-			return reconstruct_path(came_from,goal)
+			# pdb.set_trace()
+			return reconstruct_path(came_from,goal,size)
 
 		for neighbor in get_neighbors(current,grid):
 			# pdb.set_trace()
@@ -92,7 +94,7 @@ def a_star(start,goal,grid):
 			temp_g_score = current.g_val + 1 # cost(current,neighbor) will always be 1
 
 			if temp_g_score < neighbor.g_val:
-				came_from[neighbor] = current
+				came_from[neighbor.hash_value] = current
 				neighbor.g_val = temp_g_score
 				neighbor.f_val = neighbor.g_val + heuristic(neighbor,goal)
 				if not open_list.contains(neighbor):
@@ -100,32 +102,31 @@ def a_star(start,goal,grid):
 
 	return False
 
-def reconstruct_path(came_from,current):
-	for item in came_from:
-		print "({0},{1}) -> ({2},{3})".format(item.x,item.y,came_from[item].x, came_from[item].y)
-
-
-	# pdb.set_trace()
-	total_path = [current]
-	while in_dict(current,came_from):
-		current = came_from[current]
-		total_path.append(current)
-
-	return total_path
-
-
-def in_dict(current,came_from):
+def reconstruct_path(came_from,current,size):
+	key_list = list()
 	for key in came_from:
-		if current.equals(key):
-			return True
+		x = key / size # change to size
+		if key < size:
+			y = key
+		else:	
+			y = key % size # change to size
+		key_list.append(key)
 
-	return False
+	total_path = [current]
+	key = current.hash_value
+	while key in key_list:
+		current = came_from[key]
+		total_path.append(current)
+		key = current.hash_value
+
+	forward_path = list()
+
+	for i in range(len(total_path)-1,-1,-1):
+		item = total_path.pop()
+		forward_path.append(item)
 
 
-
-
-
-
+	return forward_path
 
 
 
