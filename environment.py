@@ -75,14 +75,11 @@ def write_csv(grid,output_file):
 
 	# First line is the size of the matrix
 	# x means to ignore the value
-	writer.writerow((size,size,size))
+	writer.writerow((size,size,'x'))
 
 	for i in range(0,size):
 		for j in range(0,size):
-			if grid[i][j] == 'u':
-				writer.writerow((i,j,1))
-			else:
-				writer.writerow((i,j,0))
+			writer.writerow((i,j,grid[i][j]))
 
 	f.close()
 
@@ -92,11 +89,9 @@ def read_grid(input_file):
 
 	reader = csv.reader(f)
 
-	x = 'x'
 	# pdb.set_trace()
 	for row in reader:
-		print row
-		if row[2] == x:
+		if row[2] == 'x':
 			size = int(row[0])
 			grid = [['x' for i in range(size)] for j in range(size)]
 		else:

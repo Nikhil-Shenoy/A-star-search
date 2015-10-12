@@ -15,14 +15,16 @@ def create_mazes():
 
 if __name__ == '__main__':
 
+	create_mazes()
+
 	# size = 4
 	# grid = env.generate_grid(size)
 	# grid = env.tuples_to_objects(grid)
-	if len(sys.argv) > 1:
-		print "Format: python <path to maze file>"
+	if len(sys.argv) > 2:
+		print "Format: python main.py <path to maze file>"
 		sys.exit(1)
 	else:
-		maze_file = sys.argv[0]
+		maze_file = sys.argv[1]
 
 	print maze_file
 	grid, size = env.read_grid(maze_file)
