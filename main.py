@@ -9,8 +9,8 @@ from cell import Cell
 # import pdb
 
 def create_mazes():
-	for i in range(0,1):
-		grid = env.generate_grid(4)
+	for i in range(0,101):
+		grid = env.generate_grid(101)
 		output_file = "mazes/maze_{0}.csv".format(i)
 		env.write_csv(grid,output_file)
 
@@ -32,7 +32,7 @@ def get_start_and_goal(grid):
 
 	return start, goal
 
-def part_2():
+def part_2(num_files):
 	# Compare run times for each maze using the two tie-break methods
 
 	out_file = open('data/part_2_data.csv','w')
@@ -41,14 +41,15 @@ def part_2():
 	# Header
 	writer.writerow(('maze_num','smaller_exec_time','larger_exec_time'))
 
-	for i in range(0,3):
+	for i in range(0,num_files):
 		maze_file = "mazes/maze_{0}.csv".format(i)
 		grid, size = env.read_grid(maze_file)
-		start, goal = get_start_and_goal(grid)
+		start = Cell(0,0,size)
+		goal = Cell(100,100,size)
 
 		smaller_break_start = datetime.datetime.now()
 		path = algo.repeated_forward_a_star(start,goal,grid,1)
-		forward_end = datetime.datetime.now()
+		smaller_break_end = datetime.datetime.now()
 
 		# RE-INITIALIZE GRID
 		new_grid, size = env.read_grid(maze_file)
@@ -57,7 +58,7 @@ def part_2():
 		path = algo.repeated_forward_a_star(start,goal,new_grid,0)
 		larger_break_end = datetime.datetime.now()
 
-		smaller_exec_time = forward_end - forward_start
+		smaller_exec_time = smaller_break_end - smaller_break_start
 		larger_exec_time = larger_break_end - larger_break_start
 
 		smaller_exec_time = smaller_exec_time.total_seconds()
@@ -67,14 +68,14 @@ def part_2():
 
 	out_file.close()
 
-def part_3():
+def part_3(num_files):
 	out_file = open('data/part_3_data.csv','w')
 	writer = csv.writer(out_file)
 
 	# Header
 	writer.writerow(('maze_num','forward_exec_time','backward_exec_time'))
 
-	for i in range(0,3):
+	for i in range(0,num_files):
 		maze_file = "mazes/maze_{0}.csv".format(i)
 		grid, size = env.read_grid(maze_file)
 		start, goal = get_start_and_goal(grid)
@@ -104,9 +105,7 @@ if __name__ == '__main__':
 
 	# Get rid of the .pyc files that get generated on each run
 	sys.dont_write_bytecode = True 
-	# size = 4
-	# grid = env.generate_grid(size)
-	# grid = env.tuples_to_objects(grid)
+
 	if len(sys.argv) != 3:
 		print "Format: python main.py <path to maze file> <tiebreak val: 1 for smaller g, 0 for larger g>"
 		sys.exit(1)
@@ -117,9 +116,58 @@ if __name__ == '__main__':
 			print "Invalid tie break value. Use only 1 or 0"
 			sys.exit(1)
 
+	num_files = 50
+	create_mazes()
+	# part_2(num_files)
+	# part_3(num_files)
 
-	# part_2()
-	part_3()
+	# grid, size = env.read_grid(maze_file)
+	# # start, goal = get_start_and_goal(grid)
+	# start = Cell(0,0,101)
+	# goal = Cell(100,100,101)
+
+	# forward_start = datetime.datetime.now()
+	# # path = algo.repeated_forward_a_star(start,goal,grid,0)
+	# path = algo.repeated_forward_a_star(start,goal,grid,1)
+	# forward_end = datetime.datetime.now()
+
+	# # RE-INITIALIZE GRID
+	# new_grid, size = env.read_grid(maze_file)
+
+	# backward_start = datetime.datetime.now()
+	# # path = algo.repeated_backward_a_star(start,goal,new_grid,0)
+	# path = algo.repeated_forward_a_star(start,goal,new_grid,0)
+	# backward_end = datetime.datetime.now()
+
+	# forward_exec_time = forward_end - forward_start
+	# backward_exec_time = backward_end - backward_start
+
+	# forward_exec_time = forward_exec_time.total_seconds()
+	# backward_exec_time = backward_exec_time.total_seconds()
+	# print "{0}, {1}".format(forward_exec_time,backward_exec_time)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	# grid, size = env.read_grid(maze_file)
 	# env.print_cells(grid)

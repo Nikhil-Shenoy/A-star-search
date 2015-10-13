@@ -146,6 +146,10 @@ def generate_grid(size):
 
 			# Set blocked status
 			grid[i][j] = determine_blocked_status()
+			if i == 0 and j == 0:
+				grid[i][j] = 'u'
+			elif i == 100 and j == 100:
+				grid[i][j] = 'u'
 
 			# Make the chosen cell the current cell and mark it as visited
 			if neighbor in unvisited:
@@ -167,7 +171,7 @@ def tuples_to_objects(grid):
 		for j in range(size):
 			object_grid[i][j] = Cell(i,j,size)
 			object_grid[i][j].status = grid[i][j]
-
+ 
 	return object_grid
 
 def print_cells(grid):
