@@ -38,11 +38,15 @@ if __name__ == '__main__':
 	# size = 4
 	# grid = env.generate_grid(size)
 	# grid = env.tuples_to_objects(grid)
-	if len(sys.argv) > 2:
-		print "Format: python main.py <path to maze file>"
+	if len(sys.argv) != 3:
+		print "Format: python main.py <path to maze file> <tiebreak val: 1 for smaller g, 0 for larger g>"
 		sys.exit(1)
 	else:
 		maze_file = sys.argv[1]
+		tie_val = int(sys.argv[2])
+		if tie_val != 1 and tie_val != 0:
+			print "Invalid tie break value. Use only 1 or 0"
+			sys.exit(1)
 
 	grid, size = env.read_grid(maze_file)
 	# env.print_cells(grid)
@@ -50,7 +54,7 @@ if __name__ == '__main__':
 	start, goal = get_start_and_goal(grid)
 
 	# path = algo.a_star(start,goal,grid)
-	path = algo.repeated_a_star(start,goal,grid)
+	path = algo.repeated_a_star(start,goal,grid,tie_val)
 
 
 	# if path:

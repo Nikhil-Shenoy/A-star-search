@@ -5,8 +5,9 @@ from cell import Cell
 class BHeap:
 	'Binary Min-Heap class implemented using an array. Takes Cell object as parameters'
 
-	def __init__(self):
+	def __init__(self,tie_val = 0):
 		self.heap = [0]
+		self.tie_break = tie_val # 0 = break in favor of larger g, 1 = break in favor of smaller g
 
 	def insert(self,cell):
 		self.heap.append(cell)
@@ -18,10 +19,26 @@ class BHeap:
 		start = len(self.heap)-1
 		for i in range(start,1,-1):
 			parent_index = int(math.floor(i/2))
-			parent = self.heap[parent_index].f_val
-			child = self.heap[i].f_val
+			parent_f_val = self.heap[parent_index].f_val
+			child_f_val = self.heap[i].f_val
+			parent_g_val = self.heap[parent_index].g_val
+			child_g_val = self.heap[i].g_val
 
-			if child < parent:
+			if child_f_val == parent_f_val:
+				if self.tie_break == 1 and child_g_val < parent_g_val:
+					# favor smaller g
+					print "Smaller g Tie-break!"
+					temp = self.heap[parent_index]
+					self.heap[parent_index] = self.heap[i]
+					self.heap[i] = temp
+
+				elif self.tie_break == 0 and child_g_val > parent_g_val:
+					# favor larger g
+					print "Larger g Tie-break!"
+					temp = self.heap[parent_index]
+					self.heap[parent_index] = self.heap[i]
+					self.heap[i] = temp
+			elif child_f_val < parent_f_val:
 				temp = self.heap[parent_index]
 				self.heap[parent_index] = self.heap[i]
 				self.heap[i] = temp

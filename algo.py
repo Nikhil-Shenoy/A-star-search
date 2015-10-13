@@ -172,7 +172,7 @@ def compute_path(start,goal,grid,open_list,closed_list,counter):
 	empty_list = list()
 	return empty_list
 
-def repeated_a_star(start,goal,grid):
+def repeated_a_star(start,goal,grid,Tie_val):
 	counter = 0
 	empty_list = list()
 
@@ -184,7 +184,7 @@ def repeated_a_star(start,goal,grid):
 		goal.g_val = infinity
 		goal.search_val = counter
 
-		open_list = BHeap()
+		open_list = BHeap(tie_val=Tie_val)
 		closed_list = list()
 
 		start.f_val = start.g_val + heuristic(start,goal)
