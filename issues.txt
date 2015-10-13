@@ -1,0 +1,4 @@
+- considering costs for blocked cells. Currently we only operate on unblocked cells
+- There are times when the algorithm takes way too long to find a path (25 seconds)
+
+- There are times when there is nothing in the optimal_path

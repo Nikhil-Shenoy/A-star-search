@@ -3,7 +3,7 @@ class Cell:
 	def __init__(self,i=0,j=0,size=0):
 		self.g_val = 1000000
 		self.f_val = 1000000
-		self.search_val = 1000000
+		self.search_val = 0
 		self.x = i
 		self.y = j
 		self.status = 'x'

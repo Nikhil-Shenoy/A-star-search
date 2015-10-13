@@ -63,6 +63,33 @@ def print_closed_list(closed_list):
 	for i in range(1,len(closed_list)):
 			print "({0},{1}) -> {2}".format(closed_list[i].x,closed_list[i].y,closed_list[i].f_val)
 
+def reconstruct_path(came_from,current,size):
+	key_list = list()
+	for key in came_from:
+		x = key / size # change to size
+		if key < size:
+			y = key
+		else:	
+			y = key % size # change to size
+		key_list.append(key)
+
+	total_path = [current]
+	key = current.hash_value
+	while key in key_list:
+		current = came_from[key]
+		total_path.append(current)
+		key = current.hash_value
+
+	forward_path = list()
+
+	for i in range(len(total_path)-1,-1,-1):
+		item = total_path.pop()
+		forward_path.append(item)
+
+
+	return forward_path
+
+
 def a_star(start,goal,grid):
 	size = len(grid)
 	closed_list = list()
@@ -100,57 +127,54 @@ def a_star(start,goal,grid):
 				if not open_list.contains(neighbor):
 					open_list.insert(neighbor)
 
-	return False
+	empty_list = list()
+	return empty_list
 
-def reconstruct_path(came_from,current,size):
-	key_list = list()
-	for key in came_from:
-		x = key / size # change to size
-		if key < size:
-			y = key
-		else:	
-			y = key % size # change to size
-		key_list.append(key)
-
-	total_path = [current]
-	key = current.hash_value
-	while key in key_list:
-		current = came_from[key]
-		total_path.append(current)
-		key = current.hash_value
-
-	forward_path = list()
-
-	for i in range(len(total_path)-1,-1,-1):
-		item = total_path.pop()
-		forward_path.append(item)
-
-
-	return forward_path
 
 
 
 
 def compute_path(start,goal,grid,open_list,closed_list,counter):
-	while goal.g_val > open_list.check_min():
-		s = open_list.delete()
-		closed_list.append(s)
+	size = len(grid)
 
-		neighbors = get_neighbors(s,grid)
+	came_from = dict()
 
-		for neighbor in neighbors:
+	while not open_list.empty():
+		# pdb.set_trace()
+		current = open_list.delete() # get cell with lowest f_value
+		# path.append(current)
+		closed_list.append(current)
+
+		if current.equals(goal):
+			# pdb.set_trace()
+			return reconstruct_path(came_from,goal,size)
+
+		for neighbor in get_neighbors(current,grid):
+			# pdb.set_trace()
+			if in_closed_list(closed_list,neighbor):
+			# for item in closed_list:
+				# if neighbor.equals(item):
+					continue
+
 			if neighbor.search_val < counter:
 				neighbor.g_val = infinity
 				neighbor.search_val = counter
-			if neighbor.g_val > s.g_val + 1:
-				neighbor.g_val = s.g_val + 1
-				path_list.append(s)
 
-				# if neighbor
+			temp_g_score = current.g_val + 1 # cost(current,neighbor) will always be 1
+
+			if temp_g_score < neighbor.g_val:
+				came_from[neighbor.hash_value] = current
+				neighbor.g_val = temp_g_score
+				neighbor.f_val = neighbor.g_val + heuristic(neighbor,goal)
+				if not open_list.contains(neighbor):
+					open_list.insert(neighbor)
+	
+	empty_list = list()
+	return empty_list
 
 def repeated_a_star(start,goal,grid):
 	counter = 0
-	init_grid()
+	empty_list = list()
 
 	while start != goal:
 		counter += 1
@@ -163,24 +187,35 @@ def repeated_a_star(start,goal,grid):
 		open_list = BHeap()
 		closed_list = list()
 
-		start.h_val = heuristic(start,goal)
 		start.f_val = start.g_val + heuristic(start,goal)
 
-		open_list.append(start)
+		open_list.insert(start)
 
-		#a_star()
+		optimal_path = compute_path(start,goal,grid,open_list,closed_list,counter)
 
 		if open_list.empty():
 			print "Cannot reach target"
+			return empty_list
 
-		# Follow sequence of states to destination
+		if not optimal_path:
+			print "Cannot reach target"
+			return empty_list
 
-		# Set start state to current state of the agent
+		start = optimal_path[0]
+		for i in range(1,len(optimal_path)):
+			# if cost(start,optimal_path[i]) != 1:
+			# 	# update increased action costs?
+			# 	break
+			# else:
+			# 	start = optimal_path[i]	
+			print "({0},{1})".format(start.x, start.y)
+			start = optimal_path[i]
 
-		# Update increased action costs?
+
 
 	print "I reached the target"
 
+	return optimal_path
 
 
 
