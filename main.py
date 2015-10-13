@@ -35,7 +35,7 @@ def get_start_and_goal(grid):
 def part_2():
 	# Compare run times for each maze using the two tie-break methods
 
-	out_file = open('part_2_data.csv','w')
+	out_file = open('data/part_2_data.csv','w')
 	writer = csv.writer(out_file)
 
 	# Header
@@ -68,7 +68,7 @@ def part_2():
 	out_file.close()
 
 def part_3():
-	out_file = open('part_3_data.csv','w')
+	out_file = open('data/part_3_data.csv','w')
 	writer = csv.writer(out_file)
 
 	# Header
