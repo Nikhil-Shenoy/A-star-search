@@ -3,6 +3,8 @@ import pprint
 import random
 import sys
 import algo
+import datetime
+import csv
 from cell import Cell
 # import pdb
 
@@ -30,6 +32,73 @@ def get_start_and_goal(grid):
 
 	return start, goal
 
+def part_2():
+	# Compare run times for each maze using the two tie-break methods
+
+	out_file = open('part_2_data.csv','w')
+	writer = csv.writer(out_file)
+
+	# Header
+	writer.writerow(('maze_num','smaller_exec_time','larger_exec_time'))
+
+	for i in range(0,3):
+		maze_file = "mazes/maze_{0}.csv".format(i)
+		grid, size = env.read_grid(maze_file)
+		start, goal = get_start_and_goal(grid)
+
+		smaller_break_start = datetime.datetime.now()
+		path = algo.repeated_forward_a_star(start,goal,grid,1)
+		forward_end = datetime.datetime.now()
+
+		# RE-INITIALIZE GRID
+		new_grid, size = env.read_grid(maze_file)
+
+		larger_break_start = datetime.datetime.now()
+		path = algo.repeated_forward_a_star(start,goal,new_grid,0)
+		larger_break_end = datetime.datetime.now()
+
+		smaller_exec_time = forward_end - forward_start
+		larger_exec_time = larger_break_end - larger_break_start
+
+		smaller_exec_time = smaller_exec_time.total_seconds()
+		larger_exec_time = larger_exec_time.total_seconds()
+
+		writer.writerow((i,smaller_exec_time,larger_exec_time))
+
+	out_file.close()
+
+def part_3():
+	out_file = open('part_3_data.csv','w')
+	writer = csv.writer(out_file)
+
+	# Header
+	writer.writerow(('maze_num','forward_exec_time','backward_exec_time'))
+
+	for i in range(0,3):
+		maze_file = "mazes/maze_{0}.csv".format(i)
+		grid, size = env.read_grid(maze_file)
+		start, goal = get_start_and_goal(grid)
+
+		forward_start = datetime.datetime.now()
+		path = algo.repeated_forward_a_star(start,goal,grid,0)
+		forward_end = datetime.datetime.now()
+
+		# RE-INITIALIZE GRID
+		new_grid, size = env.read_grid(maze_file)
+
+		backward_start = datetime.datetime.now()
+		path = algo.repeated_backward_a_star(start,goal,new_grid,0)
+		backward_end = datetime.datetime.now()
+
+		forward_exec_time = forward_end - forward_start
+		backward_exec_time = backward_end - backward_start
+
+		forward_exec_time = forward_exec_time.total_seconds()
+		backward_exec_time = backward_exec_time.total_seconds()
+
+		writer.writerow((i,forward_exec_time,backward_exec_time))
+
+	out_file.close()	
 
 if __name__ == '__main__':
 
@@ -48,14 +117,20 @@ if __name__ == '__main__':
 			print "Invalid tie break value. Use only 1 or 0"
 			sys.exit(1)
 
-	grid, size = env.read_grid(maze_file)
+
+	# part_2()
+	part_3()
+
+	# grid, size = env.read_grid(maze_file)
 	# env.print_cells(grid)
 
-	start, goal = get_start_and_goal(grid)
+	# start, goal = get_start_and_goal(grid)
 
 	# path = algo.a_star(start,goal,grid)
-	path = algo.repeated_a_star(start,goal,grid,tie_val)
-
+	# print "forward"
+	# path = algo.repeated_forward_a_star(start,goal,grid,tie_val)
+	# print "backward"
+	# path = algo.repeated_backward_a_star(start,goal,grid,tie_val)
 
 	# if path:
 	# 	print "path not empty"

@@ -61,7 +61,8 @@ def in_closed_list(closed_list,cell):
 
 def print_closed_list(closed_list):
 	for i in range(1,len(closed_list)):
-			print "({0},{1}) -> {2}".format(closed_list[i].x,closed_list[i].y,closed_list[i].f_val)
+			sup = 1
+			# print "({0},{1}) -> {2}".format(closed_list[i].x,closed_list[i].y,closed_list[i].f_val)
 
 def reconstruct_path(came_from,current,size):
 	key_list = list()
@@ -89,7 +90,6 @@ def reconstruct_path(came_from,current,size):
 
 	return forward_path
 
-
 def a_star(start,goal,grid):
 	size = len(grid)
 	closed_list = list()
@@ -108,7 +108,8 @@ def a_star(start,goal,grid):
 		closed_list.append(current)
 
 		if current.equals(goal):
-			# pdb.set_trace()
+			# pdb.set_trace()def repeated_backward_a_star(start,goal,grid,Tie_val):
+
 			return reconstruct_path(came_from,goal,size)
 
 		for neighbor in get_neighbors(current,grid):
@@ -129,10 +130,6 @@ def a_star(start,goal,grid):
 
 	empty_list = list()
 	return empty_list
-
-
-
-
 
 def compute_path(start,goal,grid,open_list,closed_list,counter):
 	size = len(grid)
@@ -172,7 +169,7 @@ def compute_path(start,goal,grid,open_list,closed_list,counter):
 	empty_list = list()
 	return empty_list
 
-def repeated_a_star(start,goal,grid,Tie_val):
+def repeated_forward_a_star(start,goal,grid,Tie_val):
 	counter = 0
 	empty_list = list()
 
@@ -208,9 +205,53 @@ def repeated_a_star(start,goal,grid,Tie_val):
 			# 	break
 			# else:
 			# 	start = optimal_path[i]	
-			print "({0},{1})".format(start.x, start.y)
+			# print "({0},{1})".format(start.x, start.y)
 			start = optimal_path[i]
 
+def repeated_backward_a_star(start,goal,grid,Tie_val):
+	counter = 0
+	empty_list = list()
+
+	while start != goal:
+		counter += 1
+		goal.g_val = 0
+		goal.search_val = counter
+
+		start.g_val = infinity
+		start.search_val = counter
+
+		open_list = BHeap(tie_val=Tie_val)
+		closed_list = list()
+
+		goal.f_val = goal.g_val + heuristic(goal,start)
+
+		open_list.insert(goal)
+
+		optimal_path_reversed = compute_path(goal,start,grid,open_list,closed_list,counter)
+
+		optimal_path = list()
+
+		for i in range(len(optimal_path_reversed)-1,-1,-1):
+			item = optimal_path_reversed.pop()
+			optimal_path.append(item)
+
+		if open_list.empty():
+			print "Cannot reach target"
+			return empty_list
+
+		if not optimal_path:
+			print "Cannot reach target"
+			return empty_list
+
+		start = optimal_path[0]
+		for i in range(1,len(optimal_path)):
+			# if cost(start,optimal_path[i]) != 1:
+			# 	# update increased action costs?
+			# 	break
+			# else:
+			# 	start = optimal_path[i]	
+			# print "({0},{1})".format(start.x, start.y)
+			start = optimal_path[i]
 
 
 	print "I reached the target"

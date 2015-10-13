@@ -27,14 +27,14 @@ class BHeap:
 			if child_f_val == parent_f_val:
 				if self.tie_break == 1 and child_g_val < parent_g_val:
 					# favor smaller g
-					print "Smaller g Tie-break!"
+					# print "Smaller g Tie-break!"
 					temp = self.heap[parent_index]
 					self.heap[parent_index] = self.heap[i]
 					self.heap[i] = temp
 
 				elif self.tie_break == 0 and child_g_val > parent_g_val:
 					# favor larger g
-					print "Larger g Tie-break!"
+					# print "Larger g Tie-break!"
 					temp = self.heap[parent_index]
 					self.heap[parent_index] = self.heap[i]
 					self.heap[i] = temp
