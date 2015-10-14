@@ -13,6 +13,7 @@ def create_mazes():
 		grid = env.generate_grid(101)
 		output_file = "mazes/maze_{0}.csv".format(i)
 		env.write_csv(grid,output_file)
+		print "Created {0}".format(output_file)
 
 def get_start_and_goal(grid):
 	size = len(grid)
@@ -30,7 +31,7 @@ def get_start_and_goal(grid):
 	print "start  ({0},{1})".format(start.x,start.y)
 	print "goal  ({0},{1})".format(goal.x,goal.y)
 
-	return start, goal
+	# return start, goal
 
 def part_2(num_files):
 	# Compare run times for each maze using the two tie-break methods
@@ -39,7 +40,7 @@ def part_2(num_files):
 	writer = csv.writer(out_file)
 
 	# Header
-	writer.writerow(('maze_num','smaller_exec_time','larger_exec_time'))
+	writer.writerow(('maze_num','smaller_exec_time','larger_exec_time','smaller_expanded_states','larger_expanded_states'))
 
 	for i in range(0,num_files):
 		maze_file = "mazes/maze_{0}.csv".format(i)
@@ -47,24 +48,28 @@ def part_2(num_files):
 		start = Cell(0,0,size)
 		goal = Cell(100,100,size)
 
+		smaller_expanded_states = 0
+		larger_expanded_states = 0
+
+		print "start smaller"
 		smaller_break_start = datetime.datetime.now()
-		path = algo.repeated_forward_a_star(start,goal,grid,1)
+		path, smaller_expanded_states = algo.repeated_forward_a_star(start,goal,grid,1,smaller_expanded_states)
 		smaller_break_end = datetime.datetime.now()
 
+		print "reset grid"
 		# RE-INITIALIZE GRID
 		new_grid, size = env.read_grid(maze_file)
 
+		print "start larger"
 		larger_break_start = datetime.datetime.now()
-		path = algo.repeated_forward_a_star(start,goal,new_grid,0)
+		path, larger_expanded_states = algo.repeated_forward_a_star(start,goal,new_grid,0,larger_expanded_states)
 		larger_break_end = datetime.datetime.now()
 
-		smaller_exec_time = smaller_break_end - smaller_break_start
-		larger_exec_time = larger_break_end - larger_break_start
+		smaller_exec_time = (smaller_break_end - smaller_break_start).total_seconds()
+		larger_exec_time = (larger_break_end - larger_break_start).total_seconds()
 
-		smaller_exec_time = smaller_exec_time.total_seconds()
-		larger_exec_time = larger_exec_time.total_seconds()
-
-		writer.writerow((i,smaller_exec_time,larger_exec_time))
+		print "{0},{1},{2},{3},{4}".format(i,smaller_exec_time,larger_exec_time,smaller_expanded_states,larger_expanded_states)
+		writer.writerow((i,smaller_exec_time,larger_exec_time,smaller_expanded_states,larger_expanded_states))
 
 	out_file.close()
 
@@ -73,33 +78,80 @@ def part_3(num_files):
 	writer = csv.writer(out_file)
 
 	# Header
-	writer.writerow(('maze_num','forward_exec_time','backward_exec_time'))
+	writer.writerow(('maze_num','forward_exec_time','backward_exec_time','forward_expanded_states','backward_expanded_states'))
 
 	for i in range(0,num_files):
 		maze_file = "mazes/maze_{0}.csv".format(i)
 		grid, size = env.read_grid(maze_file)
-		start, goal = get_start_and_goal(grid)
+		start = Cell(0,0,size)
+		goal = Cell(100,100,size)
 
+		forward_expanded_states = 0
+		backward_expanded_states = 0
+
+		print "forward"
 		forward_start = datetime.datetime.now()
-		path = algo.repeated_forward_a_star(start,goal,grid,0)
+		path, forward_expanded_states = algo.repeated_forward_a_star(start,goal,grid,0,forward_expanded_states)
 		forward_end = datetime.datetime.now()
 
+		print "reset grid"
 		# RE-INITIALIZE GRID
 		new_grid, size = env.read_grid(maze_file)
 
+		print "backward"
 		backward_start = datetime.datetime.now()
-		path = algo.repeated_backward_a_star(start,goal,new_grid,0)
+		path, backward_expanded_states = algo.repeated_backward_a_star(start,goal,new_grid,0,backward_expanded_states)
 		backward_end = datetime.datetime.now()
 
-		forward_exec_time = forward_end - forward_start
-		backward_exec_time = backward_end - backward_start
+		forward_exec_time = (forward_end - forward_start).total_seconds()
+		backward_exec_time = (backward_end - backward_start).total_seconds()
 
-		forward_exec_time = forward_exec_time.total_seconds()
-		backward_exec_time = backward_exec_time.total_seconds()
-
-		writer.writerow((i,forward_exec_time,backward_exec_time))
+		print "{0},{1},{2},{3},{4}".format(i,forward_exec_time,backward_exec_time,forward_expanded_states,backward_expanded_states) 
+		writer.writerow((i,forward_exec_time,backward_exec_time,forward_expanded_states,backward_expanded_states))
 
 	out_file.close()	
+
+def part_4(num_files):
+	out_file = open('data/part_4_data.csv','w')
+	writer = csv.writer(out_file)
+
+	# Header
+	writer.writerow(('maze_num','forward_exec_time','adaptive_exec_time','forward_expanded_states','adaptive_expanded_states'))
+
+	for i in range(0,num_files):
+		maze_file = "mazes/maze_{0}.csv".format(i)
+		grid, size = env.read_grid(maze_file)
+		start = Cell(0,0,size)
+		goal = Cell(100,100,size)
+
+		forward_expanded_states = 0
+		adaptive_expanded_states = 0
+
+		print "forward"
+		forward_start = datetime.datetime.now()
+		path, forward_expanded_states = algo.repeated_forward_a_star(start,goal,grid,0,forward_expanded_states)
+		forward_end = datetime.datetime.now()
+
+		print "reset grid"
+		# RE-INITIALIZE GRID
+		new_grid, size = env.read_grid(maze_file)
+
+		print "adaptive"
+		adaptive_start = datetime.datetime.now()
+		path, adaptive_expanded_states = algo.adaptive_a_star(start,goal,new_grid,0,adaptive_expanded_states)
+		adaptive_end = datetime.datetime.now()
+
+		forward_exec_time = forward_end - forward_start
+		adaptive_exec_time = adaptive_end - adaptive_start
+
+		forward_exec_time = forward_exec_time.total_seconds()
+		adaptive_exec_time = adaptive_exec_time.total_seconds()
+
+		print "{0},{1},{2},{3},{4}".format(i,forward_exec_time,adaptive_exec_time,forward_expanded_states,adaptive_expanded_states) 
+		writer.writerow((i,forward_exec_time,adaptive_exec_time,forward_expanded_states,adaptive_expanded_states))
+
+	out_file.close()	
+
 
 if __name__ == '__main__':
 
@@ -117,34 +169,42 @@ if __name__ == '__main__':
 			sys.exit(1)
 
 	num_files = 50
-	create_mazes()
+	# create_mazes()
 	# part_2(num_files)
 	# part_3(num_files)
+	part_4(num_files)
 
 	# grid, size = env.read_grid(maze_file)
 	# # start, goal = get_start_and_goal(grid)
 	# start = Cell(0,0,101)
 	# goal = Cell(100,100,101)
 
+	# print "start forward"
+	# forward_expanded_states = 0
 	# forward_start = datetime.datetime.now()
-	# # path = algo.repeated_forward_a_star(start,goal,grid,0)
-	# path = algo.repeated_forward_a_star(start,goal,grid,1)
+	# path, forward_expanded_states = algo.repeated_forward_a_star(start,goal,grid,0,forward_expanded_states)
+	# # path = algo.repeated_forward_a_star(start,goal,grid,1)
 	# forward_end = datetime.datetime.now()
-
+	# print "finished with forward"
 	# # RE-INITIALIZE GRID
 	# new_grid, size = env.read_grid(maze_file)
+	# print "reset the grid"
 
-	# backward_start = datetime.datetime.now()
-	# # path = algo.repeated_backward_a_star(start,goal,new_grid,0)
-	# path = algo.repeated_forward_a_star(start,goal,new_grid,0)
-	# backward_end = datetime.datetime.now()
+	# print "start adaptive"
+	# adaptive_expanded_states = 0
+	# backward_expanded_states = 0
+	# adaptive_start = datetime.datetime.now()
+	# # path, adaptive_expanded_states = algo.adaptive_a_star(start,goal,new_grid,0,adaptive_expanded_states)
+	# path, backward_expanded_states = algo.repeated_backward_a_star(start,goal,new_grid,0,backward_expanded_states)
+	# adaptive_end = datetime.datetime.now()
+	# print "finished with adaptive"
 
 	# forward_exec_time = forward_end - forward_start
-	# backward_exec_time = backward_end - backward_start
+	# adaptive_exec_time = adaptive_end - adaptive_start
 
 	# forward_exec_time = forward_exec_time.total_seconds()
-	# backward_exec_time = backward_exec_time.total_seconds()
-	# print "{0}, {1}".format(forward_exec_time,backward_exec_time)
+	# adaptive_exec_time = adaptive_exec_time.total_seconds()
+	# print "{0}, {1}, {2}, {3}".format(forward_exec_time,adaptive_exec_time,forward_expanded_states,backward_expanded_states)
 
 
 
@@ -178,7 +238,7 @@ if __name__ == '__main__':
 	# print "forward"
 	# path = algo.repeated_forward_a_star(start,goal,grid,tie_val)
 	# print "backward"
-	# path = algo.repeated_backward_a_star(start,goal,grid,tie_val)
+	# path = algo.repeated_adaptive_a_star(start,goal,grid,tie_val)
 
 	# if path:
 	# 	print "path not empty"
